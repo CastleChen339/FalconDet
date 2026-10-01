@@ -1,0 +1,25 @@
+# Logging and output
+# Unit: dataloader iterations (batches), for both training and evaluation logs.
+print_freq: 20
+output_dir: './outputs'
+
+# Checkpointing and evaluation
+# Unit: completed epochs; related to epochs. last.pth is still saved every epoch.
+checkpoint_freq: 2
+# Unit: completed epochs; related to epochs. The final epoch is always evaluated.
+eval_interval: 2
+# Unit: validation batches per evaluation; null means the full validation set.
+max_eval_batches: 30
+best_metric: point_f1
+# Additional best checkpoints saved during evaluation.  The primary
+# best_metric above is kept for backward compatibility and is automatically
+# included even if omitted here.
+best_metrics: [point_f1, f1, point_f1_tube_gated]
+best_mode: max
+log_branch_grad_norms: False
+# Unit: global training steps; only used when log_branch_grad_norms is True.
+branch_grad_norm_interval: 50
+
+# Distributed training
+sync_bn: False
+find_unused_parameters: False

@@ -1,0 +1,8 @@
+__include__: [
+  './FalconDet_train.yml'
+]
+
+# Full validation overrides
+# Unit: validation batches; null disables the batch limit.
+max_eval_batches: null
+output_dir: './outputs/eval'

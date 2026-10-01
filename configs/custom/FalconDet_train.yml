@@ -1,0 +1,9 @@
+__include__: [
+  './AstroDim_dataset.yml',
+  './FalconDet_model.yml',
+  './training.yml',
+  './runtime.yml'
+]
+
+# Experiment-specific overrides
+output_dir: './outputs/falcondet_0614'

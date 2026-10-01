@@ -1,0 +1,32 @@
+__include__: [
+  './FalconDet_train.yml'
+]
+
+# Debug runtime overrides
+output_dir: './outputs/debug'
+use_ema: False
+
+epochs: 1
+print_freq: 1
+checkpoint_freq: 1
+eval_interval: 1
+max_eval_batches: 2
+
+# Debug data overrides
+train_dataloader:
+  total_batch_size: 1
+  num_workers: 0
+  pin_memory: False
+  persistent_workers: False
+  prefetch_factor: null
+  dataset:
+    main_folder: '/home/cjc/datasets/AstroDim_mini/train'
+
+val_dataloader:
+  total_batch_size: 1
+  num_workers: 0
+  pin_memory: False
+  persistent_workers: False
+  prefetch_factor: null
+  dataset:
+    main_folder: '/home/cjc/datasets/AstroDim_mini/val'

@@ -1,0 +1,47 @@
+# Training schedule
+# Total epoch count; bounds freeze_*_epochs, lr_scheduler.milestones,
+# FalconDetCriterion.point_gt_warmup_epochs, checkpoint_freq, and eval_interval.
+epochs: 20
+freeze_backbone_epochs: 15
+freeze_encoder_epochs: 0
+clip_max_norm: 0.1
+
+# Exponential moving average
+use_ema: False
+ema:
+  type: ModelEMA
+  decay: 0.9999
+  # Unit: optimizer steps; only used when use_ema is True.
+  warmups: 2000
+
+# Optimizer
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm|bn).*$'
+      lr: 0.00002
+    -
+      params: '^(?=.*backbone)(?=.*norm|bn).*$'
+      lr: 0.00002
+      weight_decay: 0.0
+    -
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bn|bias)).*$'
+      weight_decay: 0.0
+
+  lr: 0.0002
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+# Learning-rate schedule
+lr_scheduler:
+  type: MultiStepLR
+  # Unit: scheduler epochs; each value should be < epochs. Counting starts
+  # after lr_warmup_scheduler finishes, so long warmup shifts these decays.
+  milestones: [8, 16]
+  gamma: 0.2
+
+lr_warmup_scheduler:
+  type: LinearWarmup
+  # Unit: optimizer steps; controls when lr_scheduler epoch counting starts.
+  warmup_duration: 300

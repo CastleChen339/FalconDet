@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# Local artifacts
+checkpoints/
+test_samples/
+outputs/
+
+# Excluded from the official release
+/exp/
+/tools/
+/analysis_report.md

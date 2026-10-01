@@ -1,0 +1,3 @@
+[submodule "pytorchvideo/facebookresearch_pytorchvideo_main"]
+	path = pytorchvideo/facebookresearch_pytorchvideo_main
+	url = https://github.com/facebookresearch/pytorchvideo.git

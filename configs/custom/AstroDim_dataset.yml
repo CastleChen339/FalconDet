@@ -1,0 +1,53 @@
+# AstroDim training data
+train_dataloader:
+  type: DataLoader
+  dataset:
+    type: AstroDimDataset
+    main_folder: '/home/cjc/tmp_data/AstroDim_mini/train'
+    seq_len: 5
+    use_torchvision_io: True
+    include_empty_windows: true
+    negative_window_ratio: 0.25
+    transforms:
+      type: Compose
+      ops:
+        - { type: RandomFlip3D, p_h: 0.5, p_v: 0.5 }
+        - { type: RandomValidCrop, crop_size: [640, 640], }
+        - { type: RemoveSingletonGroups }
+        - { type: GenerateBoundingBoxes3D, spatial_padding: 3.0, temporal_padding: 0.5, min_size_xy: 4.0, min_size_t: 1.0 }
+        - { type: Normalize }
+  shuffle: True
+  num_workers: 4
+  total_batch_size: 2
+  drop_last: True
+  collate_fn: default_collate_fn
+  pin_memory: False
+  persistent_workers: False
+  prefetch_factor: 1
+
+
+# AstroDim validation data
+val_dataloader:
+  type: DataLoader
+  dataset:
+    type: AstroDimDataset
+    main_folder: '/home/cjc/tmp_data/AstroDim_mini/val'
+    seq_len: 5
+    use_torchvision_io: True
+    include_empty_windows: true
+    negative_window_ratio: 0.25
+    transforms:
+      type: Compose
+      ops:
+        - { type: RandomValidCrop, crop_size: [640, 640] }
+        - { type: RemoveSingletonGroups }
+        - { type: GenerateBoundingBoxes3D, spatial_padding: 3.0, temporal_padding: 0.5, min_size_xy: 4.0, min_size_t: 1.0 }
+        - { type: Normalize }
+  shuffle: False
+  num_workers: 4
+  total_batch_size: 2
+  drop_last: False
+  collate_fn: default_collate_fn
+  pin_memory: False
+  persistent_workers: False
+  prefetch_factor: 1

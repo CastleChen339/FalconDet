@@ -1,0 +1,109 @@
+# Task and shared model parameters
+task: detection
+num_classes: 1
+
+model: FalconDet
+criterion: FalconDetCriterion
+postprocessor: FalconDetPostProcessor
+
+use_focal_loss: True
+eval_spatial_size: [5, 640, 640]
+
+FalconDet:
+  backbone: Backbone3D
+  encoder: HybridEncoder
+  decoder: FalconDetTransformer
+
+Backbone3D:
+  name: x3d_l
+  return_ids: [2, 3, 4]
+  pretrained: True
+
+# name: slow_r50 return_ids: [2, 3, 4] in_channels: [512, 1024, 2048] depth_strides: [1, 1, 1]
+# name: c2d_r50 return_ids: [3, 4, 5] in_channels: [512, 1024, 2048] depth_strides: [2, 2, 2]
+# name: i3d_r50 return_ids: [3, 4, 5] in_channels: [512, 1024, 2048] depth_strides: [2, 2, 2]
+# name: csn_r101 return_ids: [2, 3, 4] in_channels: [512, 1024, 2048] depth_strides: [2, 4, 8]
+# name: r2plus1d_r50 return_ids: [2, 3, 4] in_channels: [512, 1024, 2048] depth_strides: [1, 2, 4]
+# name: x3d return_ids: [2, 3, 4] in_channels: [48, 96, 192] depth_strides: [1, 1, 1] hidden_dim: 96 dim_feedforward: 384 feat_channels: [96, 96, 96]
+
+HybridEncoder:
+  in_channels: [48, 96, 192]
+  feat_strides: [8, 16, 32]
+  depth_strides: [1, 1, 1]
+  hidden_dim: 96
+  nhead: 8
+  dim_feedforward: 384
+  dropout: 0.0
+  enc_act: 'gelu'
+  use_encoder_idx: [2]
+  num_encoder_layers: 1
+  expansion: 1.0
+  depth_mult: 1
+
+
+FalconDetTransformer:
+  feat_channels: [96, 96, 96]
+  feat_strides: [8, 16, 32]
+  depth_strides: [1, 1, 1]
+  hidden_dim: 96
+  num_levels: 3
+  num_layers: 6
+  num_queries: 30
+  num_denoising: 10
+  label_noise_ratio: 0.5
+  box_noise_scale: 1.0
+  eval_idx: -1
+  num_points: [ 4, 4, 4 ] # [3,3,3] [2,2,2]
+  cross_attn_method: default # default, discrete
+  query_select_method: default # default, agnostic
+  point_train_box_jitter_xy: 0.05
+  point_train_box_jitter_t: 0.04
+  point_train_box_jitter_wh: 0.06
+  point_train_box_jitter_d: 0.04
+  point_train_use_gt: True
+  point_train_use_jitter: True
+
+
+FalconDetPostProcessor:
+  num_top_queries: 30
+  point_score_power: 1.0
+  tube_score_power: 0.5
+  point_tube_score_blend: 0.35
+
+
+FalconDetCriterion:
+  weight_dict: {loss_vfl: 1.0, loss_bbox: 5.0, loss_giou: 2.0, loss_points: 2.0, loss_point_scores: 2.25}
+  losses: ['vfl', 'boxes', 'points']
+  alpha: 0.75
+  gamma: 2.0
+  heatmap_size: [5, 160, 160]
+  point_positive_weight: 4.0
+  point_negative_weight: 1.0
+  point_xy_weight: 3.0
+  point_t_weight: 1.5
+  point_score_alpha: 0.25
+  point_score_gamma: 2.0
+  point_score_use_quality: True
+  point_score_positive_floor: 0.45
+  point_score_quality_power: 0.75
+  point_score_use_tube_quality: True
+  point_tube_quality_floor: 0.50
+  point_tube_quality_blend: 0.35
+  point_quality_xy_scale: 0.03
+  point_quality_t_scale: 0.06
+  point_gt_loss_weight: 0.4
+  point_jitter_loss_weight: 0.3
+  point_pred_loss_weight: 0.2
+  point_background_loss_weight: 0.1
+  point_background_topk: 3
+  # Unit: epochs; applies to the first N epochs and should not exceed epochs.
+  point_gt_warmup_epochs: 2
+  aux_loss_weight: 0.5
+  enc_aux_loss_weight: 0.5
+  dn_loss_weight: 0.25
+
+  matcher:
+    type: HungarianMatcher
+    weight_dict: {cost_class: 2, cost_bbox: 5, cost_giou: 2}
+    alpha: 0.25
+    gamma: 2.0
